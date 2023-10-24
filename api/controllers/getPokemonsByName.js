@@ -1,19 +1,29 @@
 const axios = require('axios');
+/* const { pokemon } = require('../src/db'); */
 
-const getPokemonsByName = async (req, res) => {
+const getPokemonsByName = async (name) => {
 
-    try {
-        const response = await axios('https://pokeapi.co/api/v2/pokemon');
-        const allPokemons = response.data.results;
-        const { name } = req.query;
-        const pokemonsFound = allPokemons.filter(pokemon => pokemon.name.toLowerCase() === name.toLowerCase() || pokemon.name.toUpperCase() === name.toUpperCase());
-        if (pokemonsFound.length < 1) return res.status(404).json({ error: 'No hemos encontrado pokemones con ese nombre☹' })
-        return res.status(200).json(pokemonsFound)
-    } catch (error) {
-        return res.status(404).json({ error: error.message })
+    name = name.toLowerCase();
+    const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${name}`);
+    const pokemon = response.data;
+    let tiposAPI = [];
+    pokemon.types.forEach(type => {
+        tiposAPI.push(type.type.name)
+    })
+    const pokemonFound = {
+        id: pokemon.id,
+        name: pokemon.name,
+        image: pokemon.sprites.front_default,
+        hp: pokemon.stats[0]["base_stat"],
+        attack: pokemon.stats[1]["base_stat"],
+        defense: pokemon.stats[2]["base_stat"],
+        speed: pokemon.stats[5]["base_stat"],
+        height: pokemon.height,
+        weight: pokemon.weight,
+        type: tiposAPI
     }
-
+    return pokemonFound;
 
 }
 
-module.exports = { getPokemonsByName };
+module.exports = getPokemonsByName;
