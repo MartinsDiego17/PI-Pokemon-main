@@ -1,7 +1,6 @@
 const axios = require('axios');
 const { pokemon, type } = require('../src/db');
 const getPokemonById = async (id) => {
-
     //API
     if (id.length < 6) {
         const response = await axios(`https://pokeapi.co/api/v2/pokemon/${id}`);
@@ -24,23 +23,22 @@ const getPokemonById = async (id) => {
         }
         return pokemonAPI;
     }
-    
+
     //DATABASE 
-    if (id.length === 35) {
-        const pokemonFound2 = [await pokemon.findAll(id, { include: { model: type } })];
-        const newPokemon = pokemonFound2.map(pokemon => {
-            return {
-                id: pokemon.id,
-                name: pokemon.name,
-                image: pokemon.image,
-                life: pokemon.life,
-                attack: pokemon.attack,
-                defense: pokemon.defense,
-                height: pokemon.height,
-                weight: pokemon.weight
-            }
-        })
-        return newPokemon[0];
+    if (id.length === 36) {
+        const pokemonFoundIndB = await pokemon.findByPk(id)
+        const newPokemon = {
+            id: pokemonFoundIndB.id,
+            name: pokemonFoundIndB.name,
+            image: pokemonFoundIndB.image,
+            life: pokemonFoundIndB.life,
+            attack: pokemonFoundIndB.attack,
+            defense: pokemonFoundIndB.defense,
+            height: pokemonFoundIndB.height,
+            weight: pokemonFoundIndB.weight
+        }
+
+        return newPokemon;
     }
 
 
@@ -49,21 +47,3 @@ const getPokemonById = async (id) => {
 
 module.exports = { getPokemonById };
 
-/* //if(idRaza.toString().length > 3){
-      //Busco BD
-      const dogDb = [await Dog.findByPk(idRaza, {include: {model: Temperaments}})]
-      const newTotal = dogDb.map((dog)=>{
-          return {
-              name: dog.name,
-              weight: {metric: dog.weight},
-              height: {metric: dog.height},
-              life_span: dog.life_span,
-              temperament:dog.Temperaments.map(element => element.dataValues.name).join(', ').trim()
-              //Devuelve array
-          }
-      })
-      return newTotal[0];
-  } */
-
-//const typeFoundInDB = type.findOne({ where: { id } });
-//let tiposDB = typeFoundInDB.nombre;
